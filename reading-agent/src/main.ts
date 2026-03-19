@@ -15,6 +15,25 @@ dotenv.config({ path: '.env.local' });
 
 export default defineAgent({
   entry: async (ctx: JobContext) => {
+    // Join the room first to get participant info
+    await ctx.connect();
+
+    // Wait for participant and get their metadata (contains the passage)
+    const participant = await ctx.waitForParticipant();
+    let passage = '';
+
+    try {
+      const metadata = participant.metadata;
+      if (metadata) {
+        const parsed = JSON.parse(metadata);
+        passage = parsed.passage || '';
+      }
+    } catch (e) {
+      console.log('No passage metadata found');
+    }
+
+    console.log('Passage to read:', passage.substring(0, 100) + '...');
+
     // Using Gemini realtime model for direct audio processing (no STT/TTS pipeline)
     const session = new voice.AgentSession({
       llm: new google.beta.realtime.RealtimeModel({
@@ -24,18 +43,23 @@ export default defineAgent({
       }),
     });
 
+    // Create agent with the passage
+    const agent = new Agent(passage);
+
     // Start the session
     await session.start({
-      agent: new Agent(),
+      agent,
       room: ctx.room,
+      participant,
     });
 
-    // Join the room and connect to the user
-    await ctx.connect();
+    // Greet the student with context about the passage
+    const greetingInstructions = passage
+      ? `Greet the student briefly. Tell them you can see they have a passage ready and you're here to help them practice reading it. Keep it to one or two sentences. Be warm and encouraging.`
+      : `Greet the student briefly. Tell them you're ready to help them practice reading. Keep it to one sentence.`;
 
-    // Greet the student
     session.generateReply({
-      instructions: 'Say hello briefly and tell the student you are ready to help them practice reading. Keep it to one sentence.',
+      instructions: greetingInstructions,
     });
   },
 });

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { AnimatePresence, motion } from 'motion/react';
 import { useSessionContext } from '@livekit/components-react';
@@ -35,6 +36,19 @@ interface ViewControllerProps {
 export function ViewController({ appConfig }: ViewControllerProps) {
   const { isConnected, start } = useSessionContext();
   const { resolvedTheme } = useTheme();
+  const [passage, setPassage] = useState('');
+
+  const handleStartCall = useCallback(
+    (passageText: string) => {
+      setPassage(passageText);
+      // Store passage in sessionStorage so token route can access it
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('reading_passage', passageText);
+      }
+      start();
+    },
+    [start]
+  );
 
   return (
     <AnimatePresence mode="wait">
@@ -44,7 +58,7 @@ export function ViewController({ appConfig }: ViewControllerProps) {
           key="welcome"
           {...VIEW_MOTION_PROPS}
           startButtonText={appConfig.startButtonText}
-          onStartCall={start}
+          onStartCall={handleStartCall}
         />
       )}
       {/* Session view */}
@@ -69,6 +83,7 @@ export function ViewController({ appConfig }: ViewControllerProps) {
           audioVisualizerRadialBarCount={appConfig.audioVisualizerRadialBarCount}
           audioVisualizerRadialRadius={appConfig.audioVisualizerRadialRadius}
           audioVisualizerWaveLineWidth={appConfig.audioVisualizerWaveLineWidth}
+          passage={passage}
           className="fixed inset-0"
         />
       )}

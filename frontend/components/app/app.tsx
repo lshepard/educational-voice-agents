@@ -26,11 +26,38 @@ interface AppProps {
   appConfig: AppConfig;
 }
 
+function getReadingCoachTokenSource(appConfig: AppConfig) {
+  return TokenSource.custom(async () => {
+    // Get the passage from sessionStorage (set by welcome-view before starting)
+    const passage = typeof window !== 'undefined'
+      ? sessionStorage.getItem('reading_passage') || ''
+      : '';
+
+    const roomConfig = appConfig.agentName
+      ? {
+          agents: [{ agent_name: appConfig.agentName }],
+        }
+      : undefined;
+
+    const res = await fetch('/api/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        room_config: roomConfig,
+        passage,
+      }),
+    });
+    return await res.json();
+  });
+}
+
 export function App({ appConfig }: AppProps) {
   const tokenSource = useMemo(() => {
     return typeof process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT === 'string'
       ? getSandboxTokenSource(appConfig)
-      : TokenSource.endpoint('/api/token');
+      : getReadingCoachTokenSource(appConfig);
   }, [appConfig]);
 
   const session = useSession(
@@ -41,7 +68,7 @@ export function App({ appConfig }: AppProps) {
   return (
     <AgentSessionProvider session={session}>
       <AppSetup />
-      <main className="grid h-svh grid-cols-1 place-content-center">
+      <main className="h-svh">
         <ViewController appConfig={appConfig} />
       </main>
       <StartAudioButton label="Start Audio" />

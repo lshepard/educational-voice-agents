@@ -40,13 +40,19 @@ export async function POST(req: Request) {
     // Recreate the RoomConfiguration object from JSON object.
     const roomConfig = RoomConfiguration.fromJson(body?.room_config, { ignoreUnknownFields: true });
 
+    // Get the passage from the request if provided
+    const passage = body?.passage;
+
     // Generate participant token
     const participantName = 'user';
     const participantIdentity = `voice_assistant_user_${Math.floor(Math.random() * 10_000)}`;
-    const roomName = `voice_assistant_room_${Math.floor(Math.random() * 10_000)}`;
+    const roomName = `reading_practice_${Math.floor(Math.random() * 10_000)}`;
+
+    // Add passage to participant metadata so the agent can access it
+    const metadata = passage ? JSON.stringify({ passage }) : undefined;
 
     const participantToken = await createParticipantToken(
-      { identity: participantIdentity, name: participantName },
+      { identity: participantIdentity, name: participantName, metadata },
       roomName,
       roomConfig
     );

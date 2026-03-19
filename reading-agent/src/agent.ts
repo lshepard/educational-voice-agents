@@ -1,7 +1,18 @@
 import { voice } from '@livekit/agents';
 
 export class Agent extends voice.Agent {
-  constructor() {
+  constructor(passage: string = '') {
+    const passageContext = passage
+      ? `
+
+The student will be reading the following passage:
+---
+${passage}
+---
+
+Listen for them reading this text. If they mispronounce a word or get stuck, gently help them with the correct pronunciation.`
+      : '';
+
     super({
       instructions: `You are an encouraging Reading Coach. A student will read text displayed on their screen.
 
@@ -12,7 +23,7 @@ Support: If they pause for more than 2 seconds or struggle with a word, gently p
 Feedback: After they finish a sentence, if they pause then encourage them to keep going. Be warm and supportive.
 
 Keep your responses brief and natural - just a few words of encouragement or help with pronunciation.
-Your responses are concise, to the point, and without any complex formatting or punctuation.`,
+Your responses are concise, to the point, and without any complex formatting or punctuation.${passageContext}`,
     });
   }
 }
