@@ -9,6 +9,7 @@ import {
   type AgentControlBarControls,
 } from '@/components/agents-ui/agent-control-bar';
 import { Shimmer } from '@/components/ai-elements/shimmer';
+import { MiniTranscript } from '@/components/app/mini-transcript';
 import { PassageDisplay } from '@/components/app/passage-display';
 import { cn } from '@/lib/shadcn/utils';
 import { TileLayout } from './tile-view';
@@ -270,11 +271,15 @@ export function AgentSessionView_01({
         </div>
 
         {/* Right side - Reading passage with word highlighting */}
-        <div className="flex w-1/2 flex-col bg-zinc-900 p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <span className="text-sm font-medium text-zinc-400">Reading Passage</span>
+        <div className="flex w-1/2 flex-col bg-zinc-900">
+          <div className="flex-1 overflow-hidden p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <span className="text-sm font-medium text-zinc-400">Reading Passage</span>
+            </div>
+            <PassageDisplay passage={passage || ''} isActive={true} />
           </div>
-          <PassageDisplay passage={passage || ''} isActive={true} />
+          {/* Mini transcript at bottom */}
+          <MiniTranscript messages={messages} />
         </div>
       </div>
 

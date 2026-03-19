@@ -79,16 +79,8 @@ export class WordTracker {
         this.currentIndex++;
         this.markWord(this.currentIndex, 'correct');
         this.currentIndex++;
-      } else {
-        // Check if it's a partial match or close enough
-        const similarity = this.calculateSimilarity(spokenWord, expectedWord);
-        if (similarity > 0.6) {
-          // Close enough - might be an accent or slight mispronunciation
-          this.markWord(this.currentIndex, 'correct');
-          this.currentIndex++;
-        }
-        // Otherwise skip - might be a filler word or mishearing
       }
+      // Otherwise skip - might be a filler word or mishearing
     }
 
     // Update last processed text for final transcripts
@@ -98,44 +90,10 @@ export class WordTracker {
   }
 
   /**
-   * Check if two words match (with some fuzzy tolerance)
+   * Check if two words match (exact match only, case-insensitive)
    */
   private wordsMatch(spoken: string, expected: string): boolean {
-    if (spoken === expected) return true;
-    if (spoken.length === 0 || expected.length === 0) return false;
-
-    // Handle common variations
-    // e.g., numbers spoken as words
-    const numberWords: Record<string, string> = {
-      'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5',
-      'six': '6', 'seven': '7', 'eight': '8', 'nine': '9', 'ten': '10',
-    };
-    if (numberWords[spoken] === expected || spoken === numberWords[expected]) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Calculate similarity between two words (simple Levenshtein-based)
-   */
-  private calculateSimilarity(a: string, b: string): number {
-    if (a === b) return 1;
-    if (a.length === 0 || b.length === 0) return 0;
-
-    // Simple character overlap ratio
-    const longer = a.length > b.length ? a : b;
-    const shorter = a.length > b.length ? b : a;
-
-    let matches = 0;
-    for (const char of shorter) {
-      if (longer.includes(char)) {
-        matches++;
-      }
-    }
-
-    return matches / longer.length;
+    return spoken === expected;
   }
 
   /**
