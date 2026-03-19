@@ -18,7 +18,7 @@ export default defineAgent({
     // Using Gemini realtime model for direct audio processing (no STT/TTS pipeline)
     const session = new voice.AgentSession({
       llm: new google.beta.realtime.RealtimeModel({
-        model: 'gemini-2.5-flash-preview-native-audio-dialog',
+        model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         voice: 'Puck',
         temperature: 0.7,
       }),

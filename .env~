@@ -1,0 +1,9 @@
+VAPI_API_KEY=ca387dcd-6352-4b20-ae4a-38565365cc25
+
+# LiveKit Cloud credentials (get from https://cloud.livekit.io)
+LIVEKIT_URL=
+LIVEKIT_API_KEY=
+LIVEKIT_API_SECRET=
+
+# Google API key for Gemini (get from https://aistudio.google.com/apikey)
+GOOGLE_API_KEY=AIzaSyCU3KEFEpXY_ype-N8Xa_N-zIZYDS963kM
