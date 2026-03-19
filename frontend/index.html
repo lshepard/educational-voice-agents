@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Practice</title>
+  <script src="https://unpkg.com/livekit-client@2/dist/livekit-client.umd.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .app-container {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .header {
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      color: #1a1a2e;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .header p {
+      color: #6b7280;
+      font-size: 1.1rem;
+    }
+
+    .reading-content {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 2px dashed #e2e8f0;
+    }
+
+    .reading-content h2 {
+      color: #374151;
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+
+    .reading-text {
+      font-size: 1.4rem;
+      line-height: 1.8;
+      color: #1f2937;
+      text-align: left;
+    }
+
+    .coach-frame {
+      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%);
+      border-radius: 20px;
+      padding: 30px;
+      border: 3px solid #e0e7ff;
+      position: relative;
+    }
+
+    .coach-frame::before {
+      content: 'Reading Coach';
+      position: absolute;
+      top: -14px;
+      left: 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .connect-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .connect-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.5);
+    }
+
+    .connect-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .connect-btn.connected {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .connect-btn.connecting {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d1d5db;
+    }
+
+    .status-dot.connected {
+      background: #22c55e;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.connecting {
+      background: #f59e0b;
+      animation: pulse 0.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .audio-visualizer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 40px;
+      margin-top: 10px;
+    }
+
+    .audio-bar {
+      width: 4px;
+      height: 10px;
+      background: #667eea;
+      border-radius: 2px;
+      transition: height 0.1s;
+    }
+
+    .audio-visualizer.active .audio-bar {
+      animation: audioWave 0.5s ease-in-out infinite;
+    }
+
+    .audio-visualizer.active .audio-bar:nth-child(1) { animation-delay: 0s; }
+    .audio-visualizer.active .audio-bar:nth-child(2) { animation-delay: 0.1s; }
+    .audio-visualizer.active .audio-bar:nth-child(3) { animation-delay: 0.2s; }
+    .audio-visualizer.active .audio-bar:nth-child(4) { animation-delay: 0.1s; }
+    .audio-visualizer.active .audio-bar:nth-child(5) { animation-delay: 0s; }
+
+    @keyframes audioWave {
+      0%, 100% { height: 10px; }
+      50% { height: 30px; }
+    }
+
+    .transcript {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 12px;
+      min-height: 60px;
+      text-align: left;
+      font-size: 0.95rem;
+      color: #374151;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .transcript:empty::before {
+      content: 'Transcription will appear here...';
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    .instructions {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fef3c7;
+      border-radius: 12px;
+      border-left: 4px solid #f59e0b;
+    }
+
+    .instructions p {
+      color: #92400e;
+      font-size: 0.95rem;
+      text-align: left;
+    }
+
+    .instructions strong {
+      color: #78350f;
+    }
+
+    .error-message {
+      margin-top: 15px;
+      padding: 12px;
+      background: #fee2e2;
+      border-radius: 8px;
+      color: #dc2626;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    #remote-audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <h1>Reading Practice</h1>
+      <p>Practice your reading with an encouraging AI coach</p>
+    </div>
+
+    <div class="reading-content">
+      <h2>Today's Reading Passage:</h2>
+      <p class="reading-text">
+        The sun rose slowly over the mountains, painting the sky in shades of orange and pink.
+        Birds began to sing their morning songs, welcoming the new day.
+        A gentle breeze rustled through the leaves of the old oak tree.
+        It was going to be a beautiful day.
+      </p>
+    </div>
+
+    <div class="coach-frame">
+      <div class="controls">
+        <button id="connectBtn" class="connect-btn">
+          <span id="btnIcon">🎤</span>
+          <span id="btnText">Start Reading</span>
+        </button>
+
+        <div class="status">
+          <div id="statusDot" class="status-dot"></div>
+          <span id="statusText">Not connected</span>
+        </div>
+
+        <div id="audioVisualizer" class="audio-visualizer">
+          <div class="audio-bar"></div>
+          <div class="audio-bar"></div>
+          <div class="audio-bar"></div>
+          <div class="audio-bar"></div>
+          <div class="audio-bar"></div>
+        </div>
+      </div>
+
+      <div id="transcript" class="transcript"></div>
+
+      <div id="errorMessage" class="error-message"></div>
+
+      <div class="instructions">
+        <p><strong>How to use:</strong> Click "Start Reading" and begin reading the passage aloud. Your AI coach will listen and help you if you get stuck on any words. Take your time!</p>
+      </div>
+    </div>
+  </div>
+
+  <audio id="remote-audio" autoplay></audio>
+
+  <script>
+    const { Room, RoomEvent, Track } = LivekitClient;
+
+    let room = null;
+    let localTrack = null;
+
+    const connectBtn = document.getElementById('connectBtn');
+    const btnIcon = document.getElementById('btnIcon');
+    const btnText = document.getElementById('btnText');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const audioVisualizer = document.getElementById('audioVisualizer');
+    const transcript = document.getElementById('transcript');
+    const errorMessage = document.getElementById('errorMessage');
+    const remoteAudio = document.getElementById('remote-audio');
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.add('show');
+      setTimeout(() => errorMessage.classList.remove('show'), 5000);
+    }
+
+    function updateUI(state) {
+      switch (state) {
+        case 'disconnected':
+          btnIcon.textContent = '🎤';
+          btnText.textContent = 'Start Reading';
+          connectBtn.classList.remove('connected', 'connecting');
+          connectBtn.disabled = false;
+          statusDot.classList.remove('connected', 'connecting');
+          statusText.textContent = 'Not connected';
+          audioVisualizer.classList.remove('active');
+          break;
+        case 'connecting':
+          btnIcon.textContent = '⏳';
+          btnText.textContent = 'Connecting...';
+          connectBtn.classList.add('connecting');
+          connectBtn.classList.remove('connected');
+          connectBtn.disabled = true;
+          statusDot.classList.add('connecting');
+          statusDot.classList.remove('connected');
+          statusText.textContent = 'Connecting...';
+          break;
+        case 'connected':
+          btnIcon.textContent = '🛑';
+          btnText.textContent = 'Stop Reading';
+          connectBtn.classList.add('connected');
+          connectBtn.classList.remove('connecting');
+          connectBtn.disabled = false;
+          statusDot.classList.add('connected');
+          statusDot.classList.remove('connecting');
+          statusText.textContent = 'Connected - Reading Coach is listening';
+          audioVisualizer.classList.add('active');
+          break;
+      }
+    }
+
+    async function connect() {
+      updateUI('connecting');
+
+      try {
+        // Get token from server
+        const tokenResponse = await fetch('/token?room=reading-practice&name=student-' + Date.now());
+        const { token, url } = await tokenResponse.json();
+
+        room = new Room({
+          audioCaptureDefaults: {
+            autoGainControl: true,
+            echoCancellation: true,
+            noiseSuppression: true,
+          },
+        });
+
+        // Set up event handlers
+        room.on(RoomEvent.TrackSubscribed, async (track, publication, participant) => {
+          console.log('Track subscribed:', track.kind, 'from', participant.identity);
+          if (track.kind === Track.Kind.Audio) {
+            const audioElement = track.attach();
+            audioElement.autoplay = true;
+            audioElement.volume = 1.0;
+            document.body.appendChild(audioElement);
+            // Force play for browsers that block autoplay
+            try {
+              await audioElement.play();
+              console.log('Audio playback started');
+            } catch (e) {
+              console.log('Autoplay blocked, will play on user interaction');
+            }
+          }
+        });
+
+        room.on(RoomEvent.TrackUnsubscribed, (track) => {
+          track.detach().forEach(el => el.remove());
+        });
+
+        room.on(RoomEvent.Disconnected, () => {
+          console.log('Disconnected from room');
+          updateUI('disconnected');
+        });
+
+        room.on(RoomEvent.DataReceived, (payload, participant) => {
+          try {
+            const data = JSON.parse(new TextDecoder().decode(payload));
+            if (data.type === 'transcript') {
+              transcript.textContent = data.text;
+            }
+          } catch (e) {
+            // Ignore non-JSON data
+          }
+        });
+
+        // Connect to room
+        await room.connect(url, token);
+        console.log('Connected to room:', room.name);
+
+        // Publish microphone
+        await room.localParticipant.setMicrophoneEnabled(true);
+        console.log('Microphone enabled');
+
+        updateUI('connected');
+
+      } catch (error) {
+        console.error('Connection error:', error);
+        showError('Failed to connect: ' + error.message);
+        updateUI('disconnected');
+      }
+    }
+
+    async function disconnect() {
+      if (room) {
+        await room.disconnect();
+        room = null;
+      }
+      updateUI('disconnected');
+    }
+
+    connectBtn.addEventListener('click', async () => {
+      if (room && room.state === 'connected') {
+        await disconnect();
+      } else {
+        await connect();
+      }
+    });
+  </script>
+</body>
+</html>

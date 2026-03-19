@@ -1,0 +1,25 @@
+{
+  "name": "reading-agent",
+  "version": "1.0.0",
+  "description": "Reading Practice voice agent using LiveKit and Gemini Live",
+  "type": "module",
+  "main": "src/agent.ts",
+  "scripts": {
+    "dev": "node --import tsx src/agent.ts dev",
+    "start": "node --import tsx src/agent.ts start",
+    "server": "node --import tsx src/token-server.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@livekit/agents": "1.0.51",
+    "@livekit/agents-plugin-google": "1.0.51",
+    "@livekit/rtc-node": "^0.13.0",
+    "dotenv": "^16.4.5",
+    "livekit-server-sdk": "^2.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
