@@ -3,7 +3,15 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
-const DEFAULT_PASSAGE = `The sun rose slowly over the mountains, painting the sky in shades of orange and pink. Birds began to sing their morning songs, welcoming the new day. A gentle breeze rustled through the leaves of the old oak tree. It was going to be a beautiful day.`;
+const DEFAULT_PASSAGE = `Bees live in a house that is called a hive. There are three
+kinds of bees: workers, drones, and queens. Only one
+queen bee can live in each hive. If she is lost or dead, the
+other bees will stop their work.
+Bees are very wise and busy little creatures. They all join
+together to build cells of wax for their honey. Each bee
+takes its proper place and does its own work. Some go out
+and gather honey from the flowers; others stay at home
+and work inside the hive.`;
 
 interface WelcomeViewProps {
   startButtonText: string;
@@ -66,9 +74,21 @@ export const WelcomeView = ({
 
         {/* Right side - Passage editor */}
         <div className="flex w-1/2 flex-col bg-zinc-900 p-6">
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-2 flex items-center gap-2">
             <span className="text-sm font-medium text-zinc-400">Reading Passage</span>
           </div>
+          <p className="mb-4 text-xs text-zinc-500">
+            Sample passage from{' '}
+            <a
+              href="https://www.k5learning.com/reading-comprehension-worksheets/third-grade-3/childrens-stories/the-bee"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              K5 Learning
+            </a>
+            . Feel free to replace with your own text.
+          </p>
           <textarea
             value={passage}
             onChange={(e) => setPassage(e.target.value)}
