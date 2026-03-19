@@ -32,8 +32,10 @@ export async function POST(req: Request) {
 
     // Parse room config from request body.
     const body = await req.json();
-    // Recreate the RoomConfiguration object from JSON object.
-    const roomConfig = RoomConfiguration.fromJson(body?.room_config, { ignoreUnknownFields: true });
+    // Recreate the RoomConfiguration object from JSON object (only if provided).
+    const roomConfig = body?.room_config
+      ? RoomConfiguration.fromJson(body.room_config, { ignoreUnknownFields: true })
+      : undefined;
 
     // Get the passage from the request if provided
     const passage = body?.passage;
@@ -74,7 +76,7 @@ export async function POST(req: Request) {
 function createParticipantToken(
   userInfo: AccessTokenOptions,
   roomName: string,
-  roomConfig: RoomConfiguration
+  roomConfig?: RoomConfiguration
 ): Promise<string> {
   const at = new AccessToken(API_KEY, API_SECRET, {
     ...userInfo,
