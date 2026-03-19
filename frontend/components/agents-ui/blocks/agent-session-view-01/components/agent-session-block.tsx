@@ -206,18 +206,21 @@ export function AgentSessionView_01({
   return (
     <section
       ref={ref}
-      className={cn('bg-background relative z-10 flex h-full w-full flex-col overflow-hidden', className)}
+      className={cn(
+        'bg-background relative z-10 flex h-full w-full flex-col overflow-hidden',
+        className
+      )}
       {...props}
     >
       {/* Header */}
-      <header className="flex items-center justify-center border-b border-border px-6 py-4">
-        <h1 className="text-2xl font-bold text-foreground">Reading Coach</h1>
+      <header className="border-border flex items-center justify-center border-b px-6 py-4">
+        <h1 className="text-foreground text-2xl font-bold">Reading Coach</h1>
       </header>
 
       {/* Main content - two column layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left side - Audio visualizer and controls */}
-        <div className="relative flex w-1/2 flex-col border-r border-border">
+        <div className="border-border relative flex w-1/2 flex-col border-r">
           <Fade top className="absolute inset-x-4 top-0 z-10 h-20" />
 
           {/* Tile layout / visualizer */}
@@ -237,10 +240,7 @@ export function AgentSessionView_01({
           </div>
 
           {/* Bottom controls */}
-          <motion.div
-            {...BOTTOM_VIEW_MOTION_PROPS}
-            className="relative z-50 px-4 pb-6"
-          >
+          <motion.div {...BOTTOM_VIEW_MOTION_PROPS} className="relative z-50 px-4 pb-6">
             {/* Pre-connect message */}
             {isPreConnectBufferEnabled && (
               <AnimatePresence>
@@ -288,7 +288,7 @@ export function AgentSessionView_01({
         {chatOpen && (
           <motion.div
             {...CHAT_MOTION_PROPS}
-            className="absolute inset-0 z-40 bg-background/95 backdrop-blur-sm"
+            className="bg-background/95 absolute inset-0 z-40 backdrop-blur-sm"
           >
             <AgentChatTranscript
               agentState={agentState}

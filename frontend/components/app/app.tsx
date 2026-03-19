@@ -29,9 +29,8 @@ interface AppProps {
 function getReadingCoachTokenSource(appConfig: AppConfig) {
   return TokenSource.custom(async () => {
     // Get the passage from sessionStorage (set by welcome-view before starting)
-    const passage = typeof window !== 'undefined'
-      ? sessionStorage.getItem('reading_passage') || ''
-      : '';
+    const passage =
+      typeof window !== 'undefined' ? sessionStorage.getItem('reading_passage') || '' : '';
 
     const roomConfig = appConfig.agentName
       ? {

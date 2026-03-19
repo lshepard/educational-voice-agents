@@ -24,18 +24,13 @@ export function MiniTranscript({ messages, className }: MiniTranscriptProps) {
   }
 
   return (
-    <div
-      className={cn(
-        'border-t border-zinc-700 bg-zinc-900/80 backdrop-blur-sm',
-        className
-      )}
-    >
+    <div className={cn('border-t border-zinc-700 bg-zinc-900/80 backdrop-blur-sm', className)}>
       <div className="px-4 py-2">
         <span className="text-xs font-medium text-zinc-500">Transcript</span>
       </div>
       <div
         ref={scrollRef}
-        className="max-h-32 overflow-y-auto px-4 pb-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700"
+        className="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-700 max-h-32 overflow-y-auto px-4 pb-3"
       >
         <div className="space-y-2">
           {messages.map((msg) => {
@@ -43,20 +38,15 @@ export function MiniTranscript({ messages, className }: MiniTranscriptProps) {
             return (
               <div
                 key={msg.id}
-                className={cn(
-                  'flex gap-2 text-sm',
-                  isUser ? 'justify-end' : 'justify-start'
-                )}
+                className={cn('flex gap-2 text-sm', isUser ? 'justify-end' : 'justify-start')}
               >
                 <div
                   className={cn(
                     'max-w-[85%] rounded-lg px-3 py-1.5',
-                    isUser
-                      ? 'bg-blue-600/20 text-blue-200'
-                      : 'bg-zinc-700/50 text-zinc-300'
+                    isUser ? 'bg-blue-600/20 text-blue-200' : 'bg-zinc-700/50 text-zinc-300'
                   )}
                 >
-                  <span className="text-[10px] font-medium uppercase tracking-wide opacity-60">
+                  <span className="text-[10px] font-medium tracking-wide uppercase opacity-60">
                     {isUser ? 'You' : 'Coach'}
                   </span>
                   <p className="mt-0.5 leading-snug">{msg.message}</p>
